@@ -1,0 +1,156 @@
+<html>
+
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="/css/googlemaps.css" />
+    <link rel="stylesheet" href="/css/searchiscope.css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+    <title>Searchiscope</title>
+
+    <script src="/js/elm.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClCqn3uhV1mDziKDoyNCZQnNhe-uOx5sA&libraries=places&callback=initialize"
+      async defer></script>
+
+  </head>
+
+  <body>
+    <div id="wrap">
+      <div id="left-column">
+      </div>
+      <div id="right-column">
+        <div id="elm-search">
+        </div>
+      </div>
+    </div>
+
+    <input id="pac-input" class="controls" type="text" placeholder="Jump to location or click on map">
+    <div id="map"></div>
+
+    <script type="text/javascript">
+      // Google Maps specific code.
+      var twitterhq = { lat: 37.7767396, lng: -122.4163715 };
+      var initialMapCenter = { lat: twitterhq.lat, lng: (twitterhq.lng + 0.3)};
+
+      var marker;
+      var circle;
+
+      function mark(latLng) {
+        sendCoords(latLng.lat(), latLng.lng());
+        marker.setPosition(latLng);
+        circle.setCenter(latLng);
+      }
+
+      function shift(latLng) {
+        return {lat: latLng.lat(), lng: latLng.lng() + 0.3};
+      }
+
+      function initialize() {
+        var map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 10,
+          center: initialMapCenter,
+          disableDefaultUI: true
+        });
+
+        // This event listener is called when the map is clicked.
+        google.maps.event.addListener(map, "click", function(event) {
+          mark(event.latLng);
+        });
+
+        // Add a marker at the center of the map.
+        addMarker(twitterhq, map);
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById("pac-input");
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map"s viewport.
+        map.addListener("bounds_changed", function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        searchBox.addListener("places_changed", function() {
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+              return;
+            }
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            var newCenter;
+            places.forEach(function(place) {
+              if (place.geometry.viewport) {
+                // Only geocodes have viewport.
+                bounds.union(place.geometry.viewport);
+                newCenter = place.geometry.viewport.getCenter();
+              } else {
+                bounds.extend(place.geometry.location);
+                newCenter = place.geometry.location;
+              }
+            });
+
+            mark(newCenter);
+            map.panTo(shift(newCenter));
+          });
+      }
+
+      // Adds a marker to the map.
+      function addMarker(location, map) {
+        marker = new google.maps.Marker({
+          position: location,
+          label: "♥︎",
+          map: map
+        });
+
+        circle = new google.maps.Circle({
+          strokeColor: "#FF0000",
+          strokeOpacity: 0,
+          strokeWeight: 2,
+          fillColor: "#FF0000",
+          fillOpacity: 0.2,
+          map: map,
+          center: location,
+          radius: 10000, // meters
+          clickable: false
+        });
+      }
+    </script>
+
+    <script type="text/javascript">
+      // Embed Elm code
+      var searchDiv = document.getElementById("elm-search");
+      var search = Elm.embed(Elm.TwitterSearch, searchDiv, { coords: [twitterhq.lat, twitterhq.lng] });
+
+      function sendCoords(lat, lng) {
+        search.ports.coords.send([lat, lng]);
+      }
+    </script>
+
+    <!--
+    <script type="text/javascript">
+      // Twitter rendering code.
+      window.twttr = (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0],
+          t = window.twttr || {};
+        if (d.getElementById(id)) return t;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://platform.twitter.com/widgets.js";
+        fjs.parentNode.insertBefore(js, fjs);
+
+        t._e = [];
+        t.ready = function(f) {
+          t._e.push(f);
+        };
+
+        return t;
+      }(document, "script", "twitter-wjs"));
+    </script>
+    -->
+  </body>
+</html>

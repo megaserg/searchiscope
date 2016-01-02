@@ -1,0 +1,151 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background-color: #B2D0FE;
+  font-family: "Lucida Grande","Trebuchet MS","Bitstream Vera Sans",Verdana,Helvetica,sans-serif;
+  font-size: 14px;
+}
+#map {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+#wrap {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 100001;
+  margin: 0 auto;
+  overflow-y: auto;
+  visibility: hidden;
+}
+#left-column {
+  float: left;
+  width: 50%;
+}
+#right-column {
+  float: right;
+  width: 50%;
+}
+#elm-search {
+  height: 100%;
+  overflow-y: auto;
+}
+
+#footer {
+  height: 3%;
+  background-color: #B2D0FE;
+}
+#footer div {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+#footer span {
+  color: white
+}
+
+#searchColumnDiv {
+  width: 80%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  visibility: visible;
+}
+#tweetListDiv {
+  text-align: center;
+}
+.searchQueryInput {
+  width: 50%;
+  height: 32px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-family: Roboto,Helvetica,"Segoe UI",Calibri,sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  border: 1px solid transparent;
+  border-radius: 2px 0 0 2px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  outline: none !important;
+  margin-left: 12px;
+  margin-top: 10px;
+  text-overflow: ellipsis;
+}
+.tweetDiv {
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e1e8ed;
+  border-radius: 6px;
+  font: normal normal 1em Helvetica,Roboto,"Segoe UI",Calibri,sans-serif;
+  font-weight: 300;
+  margin: 6px;
+  padding: 6px 8px;
+  word-wrap: break-word;
+}
+.tweetDiv a {
+  text-decoration: none;
+}
+.tweetDiv a:hover {
+  text-decoration: underline;
+}
+
+.tweetDiv .userDisplayName {
+  float: left;
+}
+.tweetDiv .userDisplayName a {
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.9em;
+  line-height: 1.0;
+}
+
+.tweetDiv .userScreenName {
+  float: left;
+}
+.tweetDiv .userScreenName a {
+  color: #697882;
+  font-size: 0.8em;
+}
+
+.tweetDiv .invisible {
+  float: left;
+  visibility: hidden;
+}
+
+.tweetDiv .tweetMetadata {
+  float: right;
+}
+.tweetDiv .tweetMetadata a {
+  color: #697882;
+  font-size: 0.9em;
+}
+
+.tweetDiv .tweetText a {
+  color: #125688;
+}
+.tweetDiv .tweetText {
+  color: #000000;
+  font-size: 1.1em;
+}
+
+.signatureDiv {
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e1e8ed;
+  border-radius: 6px;
+  font: Roboto,Helvetica,"Segoe UI",Calibri,sans-serif;
+  font-size: 0.8em;
+  font-weight: 300;
+  color: #666666;
+  text-align: left;
+  margin: 6px auto 6px auto;
+  padding: 6px 8px;
+  word-wrap: break-word;
+  width: 75%;
+}
