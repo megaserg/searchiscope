@@ -13,25 +13,29 @@ How to start your own instance
 - Install [Elm](http://elm-lang.org/install) and [Google App Engine SDK for Go](https://cloud.google.com/appengine/docs/go/).
 
 - [Create a Twitter app](https://apps.twitter.com/), obtain its API consumer key and secret, and put them in `config/twitter_credentials.json` in this format:
-
-      {
-        "key": "0123456789ABCDEF",
-        "secret": "0123456789ABCDEF0123456789ABCDEF"
-      }
+  ```
+  {
+    "key": "0123456789ABCDEF",
+    "secret": "0123456789ABCDEF0123456789ABCDEF"
+  }
+  ```
 
 - [Create a Google AppEngine project](https://console.cloud.google.com/), obtain its ID, and put it in `app.yaml` under `application:` key.
 
 - Compile Elm code to elm.js with elm-make:
-
-      $ pushd elm && elm-make TwitterSearch.elm --output ../js/elm.js && popd
+  ```
+  $ pushd elm && elm-make TwitterSearch.elm --output ../js/elm.js && popd
+  ```
 
 - Then, start a local instance:
-
-      $ goapp serve
+  ```
+  $ goapp serve
+  ```
 
 - Or deploy to Google App Engine:
-
-      $ goapp deploy
+  ```
+  $ goapp deploy
+  ```
 
 License
 -------
