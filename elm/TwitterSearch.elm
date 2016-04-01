@@ -187,16 +187,6 @@ renderTweet (tweetId, tweetText, (displayName, screenName), createdAt) =
       , span [ class "tweetText" ] (linkify tweetText)
       ]
 
-    -- blockquote
-    --   [ class "twitter-tweet"
-    --   , attribute "data-link-color" "#55acee"
-    --   , attribute "lang" "es"
-    --   ]
-    --   [ p [ attribute "lang" "en"] [ Html.text tweetText ]
-    --   , Html.text userLink
-    --   , a [ href tweetLink ] [ Html.text createdAt ]
-    --   ]
-
 serverUrl : String
 serverUrl = ""
 

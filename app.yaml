@@ -18,3 +18,8 @@ handlers:
   script: _go_app
 - url: /search
   script: _go_app
+- url: /config
+  static_dir: config
+  application_readable: true
+  login: admin
+  auth_fail_action: unauthorized
