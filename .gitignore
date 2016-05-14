@@ -10,7 +10,6 @@ config/
 # From https://github.com/github/gitignore/blob/master/Elm.gitignore
 ################################################################################
 # elm-package generated files
-elm-package.json
 elm-stuff/
 # elm-repl generated files
 repl-temp-*
