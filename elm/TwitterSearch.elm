@@ -1,41 +1,27 @@
-module TwitterSearch where
+port module TwitterSearch exposing (..)
 
-import Effects exposing (Effects, Never)
 import Html exposing (..)
+import Html.App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Json
 import Json.Decode as Json exposing ((:=))
 import Regex exposing (..)
-import StartApp
 import String exposing (..)
 import Task exposing (Task)
 
 
-port coords : Signal ((Float, Float))
+port coords : ((Float, Float) -> msg) -> Sub msg
 
-changingCoords: Signal Action
-changingCoords =
-  Signal.map CoordsChanged coords
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks
-
-
-app : StartApp.App Model
-app =
-  StartApp.start
+main : Program Never
+main =
+  Html.App.program
     { init = init (37.7767396, -122.4163715) ""
     , update = update
     , view = view
-    , inputs = [changingCoords]
+    , subscriptions = subscriptions
     }
-
-main : Signal Html.Html
-main =
-  app.html
 
 -- MODEL
 
@@ -47,7 +33,7 @@ type alias Model =
   }
 
 
-init : (Float, Float) -> String -> (Model, Effects Action)
+init : (Float, Float) -> String -> (Model, Cmd Action)
 init initialCoords initialQuery =
   ( Model initialCoords initialQuery "none" []
   , obtainBearerToken
@@ -64,7 +50,7 @@ type Action
   | SearchResults (Maybe (List (String, String, (String, String), String)))
 
 
-update : Action -> Model -> (Model, Effects Action)
+update : Action -> Model -> (Model, Cmd Action)
 update action model =
   case action of
     ObtainTokenCommand ->
@@ -78,7 +64,7 @@ update action model =
           )
         Nothing ->
           ( Model model.currentCoords model.currentQuery "fail" model.tweets
-          , Effects.none
+          , Cmd.none
           )
 
     CoordsChanged coords ->
@@ -93,9 +79,14 @@ update action model =
 
     SearchResults maybeTweets ->
       ( Model model.currentCoords model.currentQuery model.token (Maybe.withDefault model.tweets maybeTweets)
-      , Effects.none
+      , Cmd.none
       )
 
+-- SUBSCRIPTIONS
+
+subscriptions : Model -> Sub Action
+subscriptions model =
+  coords (CoordsChanged)
 
 -- VIEW
 
@@ -103,11 +94,11 @@ update action model =
 (=>) = (,)
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+view : Model -> Html Action
+view model =
   div
     [ id "searchColumnDiv" ]
-    [ queryInput address model.currentQuery
+    [ queryInput model.currentQuery
     , div [ id "tweetListDiv" ] (List.map renderTweet model.tweets)
     , div [ class "signatureDiv"]
       [ Html.text "Made by "
@@ -119,36 +110,36 @@ view address model =
     ]
 
 
-queryInput : Signal.Address Action -> String -> Html
-queryInput address string =
+queryInput : String -> Html Action
+queryInput string =
   input
     [ placeholder "Filter by word..."
     , value string
-    , on "input" targetValue (Signal.message address << QueryChanged)
+    , onInput QueryChanged
     , class "searchQueryInput"
     ]
     []
 
 
-renderTweet : (String, String, (String, String), String) -> Html.Html
+renderTweet : (String, String, (String, String), String) -> Html Action
 renderTweet (tweetId, tweetText, (displayName, screenName), createdAt) =
   let
     tweetLink = "https://twitter.com/" ++ screenName ++ "/status/" ++ tweetId
     userLink = "https://twitter.com/" ++ screenName
     formattedDate = (String.dropRight 11 createdAt) ++ " UTC"
 
-    makeLink : String -> Html.Html
+    makeLink : String -> Html Action
     makeLink url =
       a [href url] [Html.text url]
 
-    makeText : String -> Html.Html
+    makeText : String -> Html Action
     makeText txt =
       Html.text txt
 
-    linkify : String -> List Html.Html
+    linkify : String -> List (Html Action)
     linkify text =
       let
-        helper : String -> List Html.Html -> List Html.Html
+        helper : String -> List (Html Action) -> List (Html Action)
         helper text acc =
           if text == "" then acc
           else
@@ -190,7 +181,7 @@ renderTweet (tweetId, tweetText, (displayName, screenName), createdAt) =
 serverUrl : String
 serverUrl = ""
 
-sendTwitterQuery : String -> (Float, Float) -> String -> Effects Action
+sendTwitterQuery : String -> (Float, Float) -> String -> Cmd Action
 sendTwitterQuery tokenValue coords query =
   let
     lat (latitude, _) = toString latitude
@@ -205,8 +196,7 @@ sendTwitterQuery tokenValue coords query =
     sendGetRequest url []
       |> Http.fromJson searchResultsDecoder
       |> Task.toMaybe
-      |> Task.map SearchResults
-      |> Effects.task
+      |> Task.perform SearchResults SearchResults
 
 
 searchResultsDecoder : Json.Decoder (List (String, String, (String, String), String))
@@ -234,7 +224,7 @@ tokenDecoder =
     ("access_token" := Json.string)
 
 
-obtainBearerToken : Effects Action
+obtainBearerToken : Cmd Action
 obtainBearerToken =
   let
     url = serverUrl ++ "/auth"
@@ -242,9 +232,7 @@ obtainBearerToken =
     sendGetRequest url []
       |> Http.fromJson tokenDecoder
       |> Task.toMaybe
-      |> Task.map ObtainedToken
-      |> Effects.task
-
+      |> Task.perform ObtainedToken ObtainedToken
 
 sendGetRequest : String -> List (String, String) -> Task Http.RawError Http.Response
 sendGetRequest url headers =

@@ -124,11 +124,13 @@
     <script type="text/javascript">
       // Embed Elm code
       var searchDiv = document.getElementById("elm-search");
-      var search = Elm.embed(Elm.TwitterSearch, searchDiv, { coords: [twitterhq.lat, twitterhq.lng] });
+      var search = Elm.TwitterSearch.embed(searchDiv);
 
       function sendCoords(lat, lng) {
         search.ports.coords.send([lat, lng]);
       }
+
+      sendCoords(twitterhq.lat, twitterhq.lng);
     </script>
 
     <script>
